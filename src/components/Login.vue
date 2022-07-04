@@ -38,7 +38,7 @@ export default {
   methods: {
     setLogin() {
       $.ajax({
-        url: 'http://127.0.0.1:8000/auth/token/login/',
+        url: `${this.$store.getters.getBaseUrl}/auth/token/login/`,
         type: 'POST',
         data: {
           username: this.login,
@@ -47,7 +47,7 @@ export default {
         success: (response) => {
           console.log(response);
           this.$store.dispatch('setAuthToken', response.auth_token);
-          this.$router.push({name: 'home'})
+          this.$router.push({name: 'UserView'})
         },
         error: (response) => {
           console.log(response);

@@ -1,9 +1,10 @@
 import { createStore } from 'vuex'
 
-export const store = () => {
-    const store = createStore({
+//export const store = () => {
+    export const store = createStore({
         state: {
-            backendUrl: 'http://127.0.0.1:8000/api/cp1',
+            backendUrl: 'https://fll2022.pythonanywhere.com/api/cp1',
+            backendBaseUrl: 'https://fll2022.pythonanywhere.com',
             authToken: '',
         },
         mutations: {
@@ -21,6 +22,9 @@ export const store = () => {
             getServerUrl: state => {
                 return state.backendUrl
             },
+            getBaseUrl: state => {
+                return state.backendBaseUrl
+            },
             getAuthToken: state => {
                 return state.authToken
             }
@@ -35,6 +39,6 @@ export const store = () => {
         }
     });*/
 
-    return store;
-};
+//    return store;
+//};
 

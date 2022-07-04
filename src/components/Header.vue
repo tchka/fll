@@ -55,7 +55,7 @@ export default {
       this.$store.dispatch('setAuthToken', '');
 
       $.ajax({
-        url: 'http://127.0.0.1:8000/auth/token/logout/',
+        url: `${this.$store.getters.getBaseUrl}/auth/token/logout/`,
         type: 'POST',
         success: (response) => {
           console.log(response);
