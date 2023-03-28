@@ -2,6 +2,7 @@
   <Header />
   <router-view/>
   <Footer />
+  <div id="overlay" v-show="isOverlay"></div>
 </template>
 
 <style>
@@ -14,15 +15,21 @@
 <script>
   import Header from "./components/Header";
   import Footer from "./components/Footer";
-  import $ from 'jquery';
+  import setUserIfAuth from './mixins/setUserIfAuth.js';
   export default {
-    components: {Header,Footer},
-    created() {
-      if(localStorage.getItem('auth_token')) {
-        $.ajaxSetup({
-          headers: {"Authorization": "token " + localStorage.getItem('auth_token')}
-        });
+
+    computed: {
+      isOverlay() {
+        return this.$store.getters.getOverlay;
       }
+    },
+    mixins: [ setUserIfAuth ],
+    components: {
+      Header,
+      Footer
+    },
+    created() {
+      this.setUserIfAuth()
     }
   }
 

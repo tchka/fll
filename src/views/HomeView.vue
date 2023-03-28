@@ -311,6 +311,7 @@
 
 <script>
 
+import Api from '../api/index'
 export default {
   name: 'HomeView',
   data() {
@@ -319,16 +320,15 @@ export default {
       }
   },
   components: {
+    Api,
   },
   created() {
       this.getJobList()
   },
   methods: {
       async getJobList() {
-          this.jobList = await fetch(
-             `${this.$store.getters.getServerUrl}/jobs/`
-          ).then(response => response.json())
-          console.log(this.jobList)
+          let res = await Api.order.getPublished();
+          this.jobList = res.data;
       }
   }
 }

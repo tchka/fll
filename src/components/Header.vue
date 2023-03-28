@@ -1,71 +1,119 @@
 <template>
   <header>
     <div class="wrapper">
-      <div class="row">
-        <div class="col contacts">
-          <!--a href="tel:8800">8 800 2000 305</a><br>
+      <div class="row d-flex justify-space-between align-items-center">
+        <!--<div class="col contacts">
+          <a href="tel:8800">8 800 2000 305</a><br>
           <span>Горячая линия FLL<br>
-          Звонок бесплатный по россии</span-->
-        </div>
+          Звонок бесплатный по россии</span>
+        </div>-->
         <div class="col">
           <a href="/" class="logo"></a>
         </div>
         <div class="col user">
-          <span @click="goLogin" v-if="!auth" class="login">Вход</span>
-          <span @click="goLogout" v-if="auth" class="login">Выход</span>
-          <span v-if="!auth" href="/user/registration" class="register">Регистрация</span>
-          <div id="authForm" class="overscreen">
-            <form action="/user/authorization?action=authorization_verify" method="POST">
-              <div class="fields">
-                <label for="login">Логин</label>
-                <input name="user_login" id="login" type="text" />
-              </div>
-              <div class="fields">
-                <label for="password">Пароль</label>
-                <input name="user_password" id="password" type="password" />
-              </div>
-              <input type="submit" class="submit" value="Войти" />
-            </form>
-            <div class="links">
-              <a href="/user/registration">Регистрация</a>
-              <a href="/user/remind_password">Забыли пароль?</a>
-            </div>
-          </div>
+          <span @click="openAuthModal" v-if="!currentUser.username" class="login">Вход</span>
+          <span @click="openRegisterModal" v-if="!currentUser.username" class="register">Регистрация</span>
+          <span @click="$router.push({name: 'UserOrdersView'})" v-if="currentUser.username" class="register">{{ currentUser.username }}</span>
+          <span @click="goLogout" v-if="currentUser.username" class="login">Выход</span>
         </div>
       </div>
     </div>
   </header>
+    <modal
+      v-if="isAuthOpen"
+      modalClass="modal-form login"
+      @close="closeAuthModal"
+    >
+      <div>
+        <login />
+        <div class="links">
+          <span @click="changeToRegister">Регистрация</span>
+          <!--<a href="/user/remind_password">Забыли пароль?</a>-->
+        </div>
+
+      </div>
+    </modal>
+
+    <modal
+      v-if="isRegisterOpen"
+      modalClass="modal-form register"
+      @close="closeRegisterModal"
+    >
+      <div>
+        <register />
+        <div class="links">
+          <span @click="changeToAuth">Войти</span>
+          <!--<a href="/user/remind_password">Забыли пароль?</a>-->
+        </div>
+
+      </div>
+    </modal>
+
 </template>
 
 <script>
-import $ from 'jquery';
+
+
+import Modal from './Modal'
+import Login from './Login'
+import Register from './Register'
+import Api from '../api/index'
+
 export default {
+  components: {
+    Modal,
+    Login,
+    Register,
+    Api,
+  },
   name: 'Header',
   computed: {
-    auth() {
-      return this.$store.getters.getAuthToken;
-    }
+    currentUser() {
+      this.user = this.$store.getters.getUser;
+      return this.user;
+    },
+    isAuthOpen() {
+      return this.$store.getters.getAuthModal;
+    },
+    isRegisterOpen() {
+      return this.$store.getters.getRegisterModal;
+    },
   },
   methods: {
-    goLogin() {
-      this.$router.push({name: 'login'});
+
+    openAuthModal() {
+      this.$store.dispatch('setAuthModal', true);
+      this.$store.dispatch('setOverlay', true);
     },
-    goLogout() {
+    openRegisterModal() {
+      this.$store.dispatch('setRegisterModal', true);
+      this.$store.dispatch('setOverlay', true);
+    },
+    closeAuthModal() {
+      this.$store.dispatch('setAuthModal', false);
+      this.$store.dispatch('setOverlay', false);
+    },
+    closeRegisterModal() {
+      this.$store.dispatch('setRegisterModal', false);
+      this.$store.dispatch('setOverlay', false);
+    },
+    changeToRegister() {
+      this.closeAuthModal()
+      this.openRegisterModal()
+    },
+    changeToAuth() {
+      this.closeRegisterModal()
+      this.openAuthModal()
+    },
+    async goLogout() {
+      let res = await Api.auth.logout();
       localStorage.removeItem('auth_token');
       this.$store.dispatch('setAuthToken', '');
+      this.$store.dispatch('setUser', {} );
+      this.$router.push({name: 'home'});
+    },
+    goLK() {
 
-      $.ajax({
-        url: `${this.$store.getters.getBaseUrl}/auth/token/logout/`,
-        type: 'POST',
-        success: (response) => {
-          console.log(response);
-          this.$store.dispatch('setAuth', true);
-          this.$router.push({name: 'home'})
-        },
-        error: (response) => {
-          console.log(response);
-        },
-      })
     }
   }
 }

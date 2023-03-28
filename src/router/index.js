@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import PartnersView from '../views/PartnersView.vue'
-import UserView from '../views/UserView.vue'
+import UserProfileView from '../views/UserProfileView.vue'
+import PublishedOrdersView from '../views/PublishedOrdersView.vue'
+import UserOrdersView from '../views/UserOrdersView.vue'
+import CustomerOrdersAllView from '../views/CustomerOrdersAllView.vue'
+import UserViewLayout from '../views/UserViewLayout.vue'
+import LoginView from '../views/LoginView.vue'
 import Login from '@/components/Login'
 
 const routes = [
@@ -13,7 +18,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: Login
+    component: LoginView
   },
   {
     path: '/partner',
@@ -21,9 +26,38 @@ const routes = [
     component: PartnersView
   },
   {
-    path: '/user',
-    name: 'UserView',
-    component: UserView
+    path: '/user/:id',
+    name: 'UserViewLayout',
+    component: UserViewLayout,
+    children: [
+      {
+        path: 'profile',
+        name: 'UserProfileView',
+        component: UserProfileView,
+      },
+      {
+        path: 'published_orders',
+        name: 'PublishedOrdersView',
+        component: PublishedOrdersView,
+      },
+      {
+        path: 'orders',
+        name: 'UserOrdersView',
+        component: UserOrdersView,
+        children: [
+        {
+          path: 'not-published',
+          name: 'CustomerOrdersNotPublishedView',
+          component: UserOrdersView,
+        },
+        {
+          path: 'all',
+          name: 'CustomerOrdersAllView',
+          component: CustomerOrdersAllView,
+        },
+      ],
+      },
+    ]
   },
   {
     path: '/about',
